@@ -1,30 +1,26 @@
 
-function initial(){ return 0 }
+const Model = {
+    x: 100,
+    v: 2
+};
 
-function evolve(state,event){
-    switch(event.type){
-        case "ADD": return state + 1
-        case "SUB": return state - 1
-        default: return state
-    }
+const Subscribers = [];
+
+function subscribe(f){
+    Subscribers.push(f);
 }
 
-let events=[]
-
-function compute(){
-    let s=initial()
-    for(const e of events){ s=evolve(s,e) }
-    return s
+function publish(){
+    Subscribers.forEach(f => f(Model));
 }
 
-function render(){
-    document.getElementById("view")
-        .textContent="Value = "+compute()
+function update(){
+    Model.x += Model.v;
+
+    if(Model.x > 300 || Model.x < 0)
+        Model.v *= -1;
+
+    publish();
 }
 
-window.dispatch=function(e){
-    events.push(e)
-    render()
-}
-
-render()
+setInterval(update,16);
